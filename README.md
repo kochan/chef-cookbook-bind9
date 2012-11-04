@@ -1,8 +1,8 @@
 Description
 ===========
 
-This cookbook provides BIND9 installation/configuration in Chroot jail for Ubuntu.
-By default, the cookbook will compile the source of bind9 for chrooted environment.
+This cookbook provides BIND9 installation/configuration in chroot jail for Ubuntu.
+By default, the cookbook will compile the source of bind9.
 
 
 Requirements
@@ -44,8 +44,7 @@ By default, just add to a run_list `recipe[bind9]`.
 License and Author
 ==================
 
-Author:: Joshua Timberman (<joshua@opscode.com>)
-Author:: Lamont Granquist (<lamont@opscode.com>)
+Author:: Koichi Watanabe (<koichi.watanabe.jp@gmail.com>)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
