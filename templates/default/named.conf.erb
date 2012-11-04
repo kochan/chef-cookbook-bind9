@@ -1,0 +1,135 @@
+include "/etc/named/rndc.key";
+controls { inet 127.0.0.1 port 953 allow { 127.0.0.1; } keys { rndc-key; }; };
+
+acl "bogon" {
+  0.0.0.0/8;
+  127.0.0.0/8;
+  169.254.0.0/16;
+  192.0.2.0/24;
+  224.0.0.0/3;
+  0000::/8;
+  2001:db8::/32;
+  fe80::/10;
+  ff00::/8;
+};
+
+acl "private" {
+  10.0.0.0/8;
+  172.16.0.0/12;
+  192.168.0.0/16;
+};
+
+options {
+  version "";
+  blackhole { bogon; };
+  directory "/etc/named";
+  pid-file "/var/run/named.pid";
+  statistics-file "/var/run/named.stats";
+  dump-file "/var/run/named.db";
+  listen-on { any; };
+  listen-on-v6 { any; };
+  recursion no;
+  allow-query { any; };
+  querylog yes;
+  disable-empty-zone "1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.IP6.ARPA";
+//  allow-transfer;
+//  allow-notify;
+//  also-notify {};
+//  allow-update;
+//  forward only;
+//  forwarders {};
+};
+
+# The root nameservers
+zone "." {
+  type hint;
+  file "master/db.cache";
+};
+
+# localhost - forward zone
+zone  "localhost" {
+  type master;
+  file "master/db.localhost";
+  notify no;
+};
+
+# localhost - inverse zone
+zone  "1.0.0.127.in-addr.arpa" {
+  type master;
+  file "master/db.loopback";
+  notify no;
+};
+
+zone  "1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.ip6.arpa" {
+  type master;
+  file "master/db.loopback";
+  notify no;
+};
+
+logging {
+  channel "default_syslog" {
+    syslog daemon;
+    severity info;
+    print-time yes;
+    print-severity yes;
+    print-category yes;
+  };
+  channel "query" {
+    file "/var/log/query.log" versions 3 size 5M;
+    severity info;
+    print-time yes;
+    print-severity yes;
+    print-category yes;
+  };
+  channel "security" {
+    file "/var/log/security.log" versions 3 size 5M;
+    severity info;
+    print-time yes;
+    print-severity yes;
+    print-category yes;
+  };
+  channel "xfer-in" {
+    file "/var/log/xfer-in.log" versions 3 size 5M;
+    severity debug;
+    print-time yes;
+    print-severity yes;
+    print-category yes;
+  };
+  channel "xfer-out" {
+    file "/var/log/xfer-out.log" versions 3 size 5M;
+    severity debug;
+    print-time yes;
+    print-severity yes;
+    print-category yes;
+  };
+  channel "update" {
+    file "/var/log/update.log" versions 3 size 5M;
+    severity info;
+    print-time yes;
+    print-severity yes;
+    print-category yes;
+  };
+  channel "notify" {
+    file "/var/log/notify.log" versions 3 size 5M;
+    severity info;
+    print-time yes;
+    print-severity yes;
+    print-category yes;
+  };
+  channel "dnssec" {
+    file "/var/log/dnssec.log" versions 3 size 5M;
+    severity info;
+    print-time yes;
+    print-severity yes;
+    print-category yes;
+  };
+  category default { "default_syslog"; "default_debug"; };
+  category queries { "query"; };
+  category security { "security"; };
+  category xfer-in { "xfer-in"; };
+  category xfer-out { "xfer-out"; };
+  category update { "update"; };
+  category notify { "notify"; };
+  category dnssec { "dnssec"; };
+  category lame-servers { "null"; };
+};
